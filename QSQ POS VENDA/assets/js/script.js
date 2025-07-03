@@ -2,10 +2,10 @@
 const qs = (selector) => document.querySelector(selector)
 const qse = (element, selector) => element.querySelector(selector)
 
-let acompanhamentos = JSON.parse(localStorage.getItem('acompanhamentosPos')) || []
+let acompanhamentos = JSON.parse(localStorage.getItem('acompanhamentos')) || []
 
 function salvarAcompanhamentos() {
-    localStorage.setItem('acompanhamentosPos', JSON.stringify(acompanhamentos))
+    localStorage.setItem('acompanhamentos', JSON.stringify(acompanhamentos))
 }
 
 function criarCelulaInput(tipo, classe, valorOuPlaceholder, isValor = false) {
@@ -26,6 +26,10 @@ function aplicarMascaras(row) {
         $(input).mask('00/00/0000')
         input.setAttribute('data-masked', 'true')
     })
+    row.querySelectorAll('.phone:not([data-masked])').forEach(input => {
+        $(input).mask('(00) 00000-0000')
+        input.setAttribute('data-masked', 'true')
+    })
 }
 
 function renderAcompanhamentos() {
@@ -39,6 +43,7 @@ function renderAcompanhamentos() {
         row.innerHTML = `
             <td>${item.date}</td>
             <td>${item.name}</td>
+            <td>${item.phone}</td>
             <td>${item.order}</td>
             <td>
                 <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -94,6 +99,7 @@ function editarAcompanhamento(row, item, index) {
     row.innerHTML = ''
     row.appendChild(criarCelulaInput('text', 'date', item.date, true))
     row.appendChild(criarCelulaInput('text', 'name', item.name, true))
+    row.appendChild(criarCelulaInput('text', 'phone', item.phone, true))
     row.appendChild(criarCelulaInput('text', 'order', item.order, true))
 
     const tdLens = document.createElement('td')
@@ -129,6 +135,7 @@ qs('#novoAcompanhamento').addEventListener('click', (e) => {
 
     row.appendChild(criarCelulaInput('text', 'date', 'DATA...'))
     row.appendChild(criarCelulaInput('text', 'name', 'NOME...'))
+    row.appendChild(criarCelulaInput('text', 'phone', 'TELEFONE...'))
     row.appendChild(criarCelulaInput('text', 'order', 'DADOS...'))
 
     const tdLens = document.createElement('td')
@@ -172,12 +179,14 @@ function handleConfirm(row, editIndex = null) {
         let verification = true
         const dateInput = qse(row, '.date')
         const nameInput = qse(row, '.name')
+        const phoneInput = qse(row, '.phone')
         const orderInput = qse(row, '.order')
         const lensInput = qse(row, '.lens')
 
         const inputs = [
             { input: dateInput, message: 'PREENCHA A DATA' },
             { input: nameInput, message: 'PREENCHA O NOME' },
+            { input: phoneInput, message: 'PREENCHA O TELEFONE' },
             { input: orderInput, message: 'PREENCHA OS DADOS' },
             { input: lensInput, message: 'PREENCHA A DIOPTRIA' },
         ]
@@ -205,13 +214,13 @@ function handleConfirm(row, editIndex = null) {
         const novoAcompanhamento = {
             date: dateInput.value,
             name: nameInput.value,
+            phone: phoneInput.value,
             order: orderInput.value,
             lens: lensInput.value,
             concluido: false
         }
 
         if (editIndex !== null) {
-            // mantém o estado concluido original
             novoAcompanhamento.concluido = acompanhamentos[editIndex].concluido || false
             acompanhamentos[editIndex] = novoAcompanhamento
         } else {
@@ -227,22 +236,22 @@ function handleConfirm(row, editIndex = null) {
 renderAcompanhamentos()
 
 function fazerBackup() {
-    if (acompanhamentos.length === 0) {
-        alert('Não há dados para backup.')
-        return
-    }
+  if (acompanhamentos.length === 0) {
+    alert('Não há dados para backup.')
+    return
+  }
 
-    const dadosJSON = JSON.stringify(acompanhamentos, null, 2)
-    const blob = new Blob([dadosJSON], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
+  const dadosJSON = JSON.stringify(acompanhamentos, null, 2)
+  const blob = new Blob([dadosJSON], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
 
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `backup_pos_${new Date().toISOString().slice(0,10)}.json`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `backup_pos_${new Date().toISOString().slice(0,10)}.json`
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
 }
 
 // Conecta o botão com a função
