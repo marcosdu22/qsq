@@ -29,6 +29,10 @@ function aplicarMascaras(row) {
         $(input).mask('00000')
         input.setAttribute('data-masked', 'true')
     })
+    row.querySelectorAll('.phone:not([data-masked])').forEach(input => {
+        $(input).mask('(00) 00000-0000')
+        input.setAttribute('data-masked', 'true')
+    })
 }
 
 function renderChamados() {
@@ -43,6 +47,7 @@ function renderChamados() {
             <td>${chamado.date}</td>
             <td>${chamado.protocol}</td>
             <td>${chamado.name}</td>
+            <td>${chamado.phone}</td>
             <td>
                 <div style='display: flex; justify-content: space-between; align-items: center;'>
                     <span>${chamado.reason}</span>
@@ -54,36 +59,24 @@ function renderChamados() {
             </td>
         `
 
-        // Estiliza as linhas dependendo do estado concluído
-        if (chamado.concluido) {
-            row.querySelectorAll('td').forEach((el) => {
-                el.style.backgroundColor = '#abdc18'
-                el.style.color = '#FFFFFF'
-                el.style.fontWeight = 'bold'
-            })
-        } else {
-            row.querySelectorAll('td').forEach((el) => {
-                el.style.backgroundColor = '#8b4513'
-                el.style.color = '#FFFFFF'
-                el.style.fontWeight = 'bold'
-            })
-        }
+        const cells = row.querySelectorAll('td')
+        cells.forEach(cell => {
+            cell.style.backgroundColor = chamado.concluido ? '#abdc18' : '#8b4513'
+            cell.style.color = '#FFFFFF'
+            cell.style.fontWeight = 'bold'
+        })
 
         const concluirBtn = qse(row, '.concluido')
         const editarBtn = qse(row, '.editar')
 
         concluirBtn.onclick = () => {
             if (!chamado.concluido) {
-                // Marca como concluído
                 chamado.concluido = true
-                salvarChamados()
-                renderChamados()
             } else {
-                // Apaga o chamado
                 chamados.splice(index, 1)
-                salvarChamados()
-                renderChamados()
             }
+            salvarChamados()
+            renderChamados()
         }
 
         if (editarBtn) {
@@ -101,6 +94,7 @@ function editarChamado(row, chamado, index) {
     row.appendChild(criarCelulaInput('text', 'date', chamado.date, true))
     row.appendChild(criarCelulaInput('text', 'protocol', chamado.protocol, true))
     row.appendChild(criarCelulaInput('text', 'name', chamado.name, true))
+    row.appendChild(criarCelulaInput('text', 'phone', chamado.phone || '', true))
 
     const tdReason = document.createElement('td')
     const container = document.createElement('div')
@@ -127,7 +121,6 @@ function editarChamado(row, chamado, index) {
 
 qs('#novoAcompanhamento').addEventListener('click', (e) => {
     e.preventDefault()
-
     if (document.querySelectorAll('input').length > 0) return
 
     const row = document.createElement('tr')
@@ -136,6 +129,7 @@ qs('#novoAcompanhamento').addEventListener('click', (e) => {
     row.appendChild(criarCelulaInput('text', 'date', 'DATA...'))
     row.appendChild(criarCelulaInput('text', 'protocol', 'PROTOCOLO...'))
     row.appendChild(criarCelulaInput('text', 'name', 'NOME...'))
+    row.appendChild(criarCelulaInput('text', 'phone', 'TELEFONE...'))
 
     const tdReason = document.createElement('td')
     const container = document.createElement('div')
@@ -157,19 +151,16 @@ qs('#novoAcompanhamento').addEventListener('click', (e) => {
     row.appendChild(tdReason)
 
     qs('tbody').append(row)
-
     aplicarMascaras(row)
 
-    row.querySelectorAll('input').forEach((input) => {
+    row.querySelectorAll('input').forEach(input => {
         input.addEventListener('input', () => {
             if (input.value.trim() !== '') input.classList.remove('error')
         })
     })
 
     handleConfirm(row)
-}
-
-)
+})
 
 function handleConfirm(row, editIndex = null) {
     const confirmBtn = qse(row, '.confirmButton')
@@ -182,12 +173,14 @@ function handleConfirm(row, editIndex = null) {
         const date = qse(row, '.date')
         const protocol = qse(row, '.protocol')
         const name = qse(row, '.name')
+        const phone = qse(row, '.phone')
         const reason = qse(row, '.reason')
 
         const inputs = [
             { input: date, message: 'PREENCHA A DATA' },
             { input: protocol, message: 'PREENCHA O PROTOCOLO' },
             { input: name, message: 'PREENCHA O NOME' },
+            { input: phone, message: 'PREENCHA O TELEFONE' },
             { input: reason, message: 'PREENCHA O MOTIVO' },
         ]
 
@@ -215,12 +208,12 @@ function handleConfirm(row, editIndex = null) {
             date: date.value,
             protocol: protocol.value,
             name: name.value,
+            phone: phone.value,
             reason: reason.value,
-            concluido: false // garante que ao criar novo, começa não concluído
+            concluido: false
         }
 
         if (editIndex !== null) {
-            // Mantém o estado concluído original caso esteja editando
             novoChamado.concluido = chamados[editIndex].concluido || false
             chamados[editIndex] = novoChamado
         } else {
@@ -236,24 +229,22 @@ function handleConfirm(row, editIndex = null) {
 renderChamados()
 
 function fazerBackup() {
-  if (chamados.length === 0) {
-    alert('Não há dados para backup.')
-    return
-  }
+    if (chamados.length === 0) {
+        alert('Não há dados para backup.')
+        return
+    }
 
-  const dadosJSON = JSON.stringify(chamados, null, 2)
-  const blob = new Blob([dadosJSON], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
+    const dadosJSON = JSON.stringify(chamados, null, 2)
+    const blob = new Blob([dadosJSON], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
 
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `backup_chamados_${new Date().toISOString().slice(0,10)}.json`
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `backup_chamados_${new Date().toISOString().slice(0,10)}.json`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
 }
 
-// Conecta o botão com a função
 qs('#btnBackup').addEventListener('click', fazerBackup)
-
