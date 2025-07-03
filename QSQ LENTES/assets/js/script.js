@@ -26,6 +26,10 @@ function aplicarMascaras(row) {
     $(input).mask('00/00/0000')
     input.setAttribute('data-masked', 'true')
   })
+  row.querySelectorAll('.telefone:not([data-masked])').forEach(input => {
+    $(input).mask('(00) 00000-0000')
+    input.setAttribute('data-masked', 'true')
+  })
 }
 
 function renderAcompanhamentos() {
@@ -39,6 +43,7 @@ function renderAcompanhamentos() {
     row.innerHTML = `
       <td>${acomp.date}</td>
       <td>${acomp.name}</td>
+      <td>${acomp.telefone}</td>
       <td>${acomp.order}</td>
       <td>
         <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -51,7 +56,6 @@ function renderAcompanhamentos() {
       </td>
     `
 
-    // Estiliza a linha conforme estado concluído
     if (acomp.concluido) {
       row.querySelectorAll('td').forEach(td => {
         td.style.backgroundColor = '#abdc18'
@@ -93,6 +97,7 @@ function editarAcompanhamento(row, acomp, index) {
   row.innerHTML = ''
   row.appendChild(criarCelulaInput('text', 'date', acomp.date, true))
   row.appendChild(criarCelulaInput('text', 'name', acomp.name, true))
+  row.appendChild(criarCelulaInput('text', 'telefone', acomp.telefone, true))
   row.appendChild(criarCelulaInput('text', 'order', acomp.order, true))
 
   const tdLens = document.createElement('td')
@@ -128,6 +133,7 @@ qs('#novoAcompanhamento').addEventListener('click', e => {
 
   row.appendChild(criarCelulaInput('text', 'date', 'DATA...'))
   row.appendChild(criarCelulaInput('text', 'name', 'NOME DO CLIENTE...'))
+  row.appendChild(criarCelulaInput('text', 'telefone', 'TELEFONE...'))
   row.appendChild(criarCelulaInput('text', 'order', 'ORDEM DE SERVIÇO...'))
 
   const tdLens = document.createElement('td')
@@ -173,12 +179,14 @@ function handleConfirm(row, editIndex = null) {
 
     const dateInput = qse(row, '.date')
     const nameInput = qse(row, '.name')
+    const telefoneInput = qse(row, '.telefone')
     const orderInput = qse(row, '.order')
     const lensInput = qse(row, '.lens')
 
     const inputsToValidate = [
       { input: dateInput, message: 'PREENCHA A DATA' },
       { input: nameInput, message: 'PREENCHA O NOME DO CLIENTE' },
+      { input: telefoneInput, message: 'PREENCHA O TELEFONE' },
       { input: orderInput, message: 'PREENCHA A ORDEM DE SERVIÇO' },
       { input: lensInput, message: 'PREENCHA A LENTE' }
     ]
@@ -205,6 +213,7 @@ function handleConfirm(row, editIndex = null) {
     const novoAcomp = {
       date: dateInput.value.trim(),
       name: nameInput.value.trim(),
+      telefone: telefoneInput.value.trim(),
       order: orderInput.value.trim(),
       lens: lensInput.value.trim(),
       concluido: false
@@ -225,7 +234,6 @@ function handleConfirm(row, editIndex = null) {
 // Inicializa
 renderAcompanhamentos()
 
-// Função para baixar os dados atuais como arquivo JSON
 function fazerBackup() {
   if (acompanhamentos.length === 0) {
     alert('Não há dados para backup.')
@@ -245,5 +253,4 @@ function fazerBackup() {
   URL.revokeObjectURL(url)
 }
 
-// Conecta o botão com a função
 qs('#btnBackup').addEventListener('click', fazerBackup)
