@@ -2,10 +2,10 @@
 const qs = (selector) => document.querySelector(selector)
 const qse = (element, selector) => element.querySelector(selector)
 
-let acompanhamentos = JSON.parse(localStorage.getItem('acompanhamentos')) || []
+let acompanhamentos = JSON.parse(localStorage.getItem('acompanhamento_pos')) || []
 
 function salvarAcompanhamentos() {
-    localStorage.setItem('acompanhamentos', JSON.stringify(acompanhamentos))
+    localStorage.setItem('acompanhamento_pos', JSON.stringify(acompanhamentos))
 }
 
 function criarCelulaInput(tipo, classe, valorOuPlaceholder, isValor = false) {
@@ -236,22 +236,22 @@ function handleConfirm(row, editIndex = null) {
 renderAcompanhamentos()
 
 function fazerBackup() {
-  if (acompanhamentos.length === 0) {
-    alert('Não há dados para backup.')
-    return
-  }
+    if (acompanhamentos.length === 0) {
+        alert('Não há dados para backup.')
+        return
+    }
 
-  const dadosJSON = JSON.stringify(acompanhamentos, null, 2)
-  const blob = new Blob([dadosJSON], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
+    const dadosJSON = JSON.stringify(acompanhamentos, null, 2)
+    const blob = new Blob([dadosJSON], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
 
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `backup_pos_${new Date().toISOString().slice(0,10)}.json`
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `backup_pos_${new Date().toISOString().slice(0, 10)}.json`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
 }
 
 // Conecta o botão com a função
