@@ -14,7 +14,7 @@ function criarCelulaInput(tipo, classe, valorOuPlaceholder, isValor = false) {
     input.type = tipo
     input.className = classe
     input.style = 'width: 100%; padding: 4px; text-align:center;'
-    input.maxLength = 15
+    input.maxLength = 40
     if (isValor) input.value = valorOuPlaceholder
     else input.placeholder = valorOuPlaceholder
     td.appendChild(input)
@@ -110,7 +110,7 @@ function editarAcompanhamento(row, item, index) {
     input.type = 'text'
     input.className = 'lens'
     input.value = item.lens
-    input.maxLength = 15
+    input.maxLength = 40
     input.style = 'flex: 1; padding: 4px; text-align:center;'
 
     const btn = document.createElement('button')
@@ -146,7 +146,7 @@ qs('#novoAcompanhamento').addEventListener('click', (e) => {
     input.type = 'text'
     input.className = 'lens'
     input.placeholder = 'DIOPTRIA...'
-    input.maxLength = 15
+    input.maxLength = 40
     input.style = 'flex: 1; padding: 4px; text-align:center;'
 
     const btn = document.createElement('button')
