@@ -64,7 +64,7 @@ function renderAcompanhamentos() {
       })
     } else {
       row.querySelectorAll('td').forEach(td => {
-        td.style.backgroundColor = '#8b4513'
+        td.style.backgroundColor = '#ffc5d5'
         td.style.color = '#FFFFFF'
         td.style.fontWeight = 'bold'
       })
