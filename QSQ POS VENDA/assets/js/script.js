@@ -58,13 +58,13 @@ function renderAcompanhamentos() {
 
         if (item.concluido) {
             row.querySelectorAll('td').forEach((el) => {
-                el.style.backgroundColor = '#abdc18'
+                el.style.backgroundColor = '#287e1d'
                 el.style.color = '#FFFFFF'
                 el.style.fontWeight = 'bold'
             })
         } else {
             row.querySelectorAll('td').forEach((el) => {
-                el.style.backgroundColor = '#8b4513'
+                el.style.backgroundColor = '#494949'
                 el.style.fontWeight = 'bold'
                 el.style.color = '#FFFFFF'
             })
