@@ -61,7 +61,7 @@ function renderChamados() {
 
         const cells = row.querySelectorAll('td')
         cells.forEach(cell => {
-            cell.style.backgroundColor = chamado.concluido ? '#abdc18' : '#8b4513'
+            cell.style.backgroundColor = chamado.concluido ? '#287e1d' : '#494949'
             cell.style.color = '#FFFFFF'
             cell.style.fontWeight = 'bold'
         })
