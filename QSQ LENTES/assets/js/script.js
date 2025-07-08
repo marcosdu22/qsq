@@ -58,7 +58,7 @@ function renderAcompanhamentos() {
 
     if (acomp.concluido) {
       row.querySelectorAll('td').forEach(td => {
-        td.style.backgroundColor = '#0e4e0a'
+        td.style.backgroundColor = '#287e1d'
         td.style.color = '#FFFFFF'
         td.style.fontWeight = 'bold'
       })
