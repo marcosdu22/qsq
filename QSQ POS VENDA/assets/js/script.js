@@ -39,10 +39,10 @@ function aplicarEstiloLinha(row, etapaBotao, concluido) {
     if (concluido) {
         bg = '#0b9205'
     } else if (etapaBotao === 'pos15') {
-        bg = '#d48299'
+        bg = '#2b818c'
         fg = '#FFFFFF'
     } else if (etapaBotao === 'pos90') {
-        bg = '#e64e81'
+        bg = '#d48299'
         fg = '#FFFFFF'
     }
 
