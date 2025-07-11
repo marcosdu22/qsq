@@ -32,6 +32,27 @@ function aplicarMascaras(row) {
     })
 }
 
+function aplicarEstiloLinha(row, etapaBotao, concluido) {
+    let bg = '#c7b6be'
+    let fg = '#FFFFFF'
+
+    if (concluido) {
+        bg = '#0b9205'
+    } else if (etapaBotao === 'pos15') {
+        bg = '#d48299'
+        fg = '#FFFFFF'
+    } else if (etapaBotao === 'pos90') {
+        bg = '#e64e81'
+        fg = '#FFFFFF'
+    }
+
+    row.querySelectorAll('td').forEach((el) => {
+        el.style.backgroundColor = bg
+        el.style.color = fg
+        el.style.fontWeight = 'bold'
+    })
+}
+
 function renderAcompanhamentos() {
     const tbody = qs('tbody')
     tbody.innerHTML = ''
@@ -44,52 +65,52 @@ function renderAcompanhamentos() {
             <td>${item.date}</td>
             <td>${item.name}</td>
             <td>${item.phone}</td>
-            <td>${item.order}</td>
             <td>
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span>${item.lens}</span>
+                    <span>${item.order}</span>
                     <div style="display: flex; gap: 6px;">
-                        <button class="concluido button">${item.concluido ? 'APAGAR' : 'CONCLUÍDO'}</button>
+                        <button class="btn15 button" style="display: ${item.etapaBotao === 'inicio' ? 'inline-block' : 'none'};">15</button>
+                        <button class="btn90 button" style="display: ${item.etapaBotao === 'pos15' ? 'inline-block' : 'none'};">90</button>
+                        <button class="concluido button" style="display: ${item.etapaBotao === 'pos90' || item.concluido ? 'inline-block' : 'none'};">${item.concluido ? 'APAGAR' : 'CONCLUÍDO'}</button>
                         ${!item.concluido ? '<button class="editar button">EDITAR</button>' : ''}
                     </div>
                 </div>
             </td>
         `
 
-        if (item.concluido) {
-            row.querySelectorAll('td').forEach((el) => {
-                el.style.backgroundColor = '#287e1d'
-                el.style.color = '#FFFFFF'
-                el.style.fontWeight = 'bold'
-            })
-        } else {
-            row.querySelectorAll('td').forEach((el) => {
-                el.style.backgroundColor = '#494949'
-                el.style.fontWeight = 'bold'
-                el.style.color = '#FFFFFF'
-            })
-        }
+        aplicarEstiloLinha(row, item.etapaBotao, item.concluido)
 
         const concluirBtn = qse(row, '.concluido')
         const editarBtn = qse(row, '.editar')
+        const btn15 = qse(row, '.btn15')
+        const btn90 = qse(row, '.btn90')
 
-        concluirBtn.onclick = () => {
+        concluirBtn?.addEventListener('click', () => {
             if (!item.concluido) {
                 item.concluido = true
-                salvarAcompanhamentos()
-                renderAcompanhamentos()
+                item.etapaBotao = 'concluido'
             } else {
                 acompanhamentos.splice(index, 1)
-                salvarAcompanhamentos()
-                renderAcompanhamentos()
             }
-        }
+            salvarAcompanhamentos()
+            renderAcompanhamentos()
+        })
 
-        if (editarBtn) {
-            editarBtn.onclick = () => {
-                editarAcompanhamento(row, item, index)
-            }
-        }
+        editarBtn?.addEventListener('click', () => {
+            editarAcompanhamento(row, item, index)
+        })
+
+        btn15?.addEventListener('click', () => {
+            item.etapaBotao = 'pos15'
+            salvarAcompanhamentos()
+            renderAcompanhamentos()
+        })
+
+        btn90?.addEventListener('click', () => {
+            item.etapaBotao = 'pos90'
+            salvarAcompanhamentos()
+            renderAcompanhamentos()
+        })
 
         tbody.appendChild(row)
     })
@@ -100,16 +121,15 @@ function editarAcompanhamento(row, item, index) {
     row.appendChild(criarCelulaInput('text', 'date', item.date, true))
     row.appendChild(criarCelulaInput('text', 'name', item.name, true))
     row.appendChild(criarCelulaInput('text', 'phone', item.phone, true))
-    row.appendChild(criarCelulaInput('text', 'order', item.order, true))
 
-    const tdLens = document.createElement('td')
+    const tdOrder = document.createElement('td')
     const container = document.createElement('div')
-    container.style = 'display: flex; gap: 6px; align-items: center;'
+    container.style = 'display: flex; justify-content: space-between; align-items: center;'
 
     const input = document.createElement('input')
     input.type = 'text'
-    input.className = 'lens'
-    input.value = item.lens
+    input.className = 'order'
+    input.value = item.order
     input.maxLength = 40
     input.style = 'flex: 1; padding: 4px; text-align:center;'
 
@@ -117,9 +137,14 @@ function editarAcompanhamento(row, item, index) {
     btn.className = 'confirmButton button'
     btn.textContent = 'CONFIRMAR'
 
-    container.append(input, btn)
-    tdLens.appendChild(container)
-    row.appendChild(tdLens)
+    const btnContainer = document.createElement('div')
+    btnContainer.style = 'display: flex; gap: 6px; margin-left: 10px;'
+    btnContainer.appendChild(btn)
+
+    container.appendChild(input)
+    container.appendChild(btnContainer)
+    tdOrder.appendChild(container)
+    row.appendChild(tdOrder)
 
     aplicarMascaras(row)
     handleConfirm(row, index)
@@ -127,7 +152,6 @@ function editarAcompanhamento(row, item, index) {
 
 qs('#novoAcompanhamento').addEventListener('click', (e) => {
     e.preventDefault()
-
     if (document.querySelectorAll('input').length > 0) return
 
     const row = document.createElement('tr')
@@ -136,16 +160,15 @@ qs('#novoAcompanhamento').addEventListener('click', (e) => {
     row.appendChild(criarCelulaInput('text', 'date', 'DATA...'))
     row.appendChild(criarCelulaInput('text', 'name', 'NOME...'))
     row.appendChild(criarCelulaInput('text', 'phone', 'TELEFONE...'))
-    row.appendChild(criarCelulaInput('text', 'order', 'DADOS...'))
 
-    const tdLens = document.createElement('td')
+    const tdOrder = document.createElement('td')
     const container = document.createElement('div')
-    container.style = 'display: flex; gap: 6px; align-items: center;'
+    container.style = 'display: flex; justify-content: space-between; align-items: center;'
 
     const input = document.createElement('input')
     input.type = 'text'
-    input.className = 'lens'
-    input.placeholder = 'DIOPTRIA...'
+    input.className = 'order'
+    input.placeholder = 'O QUE COMPROU?...'
     input.maxLength = 40
     input.style = 'flex: 1; padding: 4px; text-align:center;'
 
@@ -153,9 +176,14 @@ qs('#novoAcompanhamento').addEventListener('click', (e) => {
     btn.className = 'confirmButton button'
     btn.textContent = 'CONFIRMAR'
 
-    container.append(input, btn)
-    tdLens.appendChild(container)
-    row.appendChild(tdLens)
+    const btnContainer = document.createElement('div')
+    btnContainer.style = 'display: flex; gap: 6px; margin-left: 10px;'
+    btnContainer.appendChild(btn)
+
+    container.appendChild(input)
+    container.appendChild(btnContainer)
+    tdOrder.appendChild(container)
+    row.appendChild(tdOrder)
 
     aplicarMascaras(row)
 
@@ -181,14 +209,12 @@ function handleConfirm(row, editIndex = null) {
         const nameInput = qse(row, '.name')
         const phoneInput = qse(row, '.phone')
         const orderInput = qse(row, '.order')
-        const lensInput = qse(row, '.lens')
 
         const inputs = [
             { input: dateInput, message: 'PREENCHA A DATA' },
             { input: nameInput, message: 'PREENCHA O NOME' },
             { input: phoneInput, message: 'PREENCHA O TELEFONE' },
             { input: orderInput, message: 'PREENCHA OS DADOS' },
-            { input: lensInput, message: 'PREENCHA A DIOPTRIA' },
         ]
 
         const regexData = /^\d{2}\/\d{2}\/\d{4}$/
@@ -216,12 +242,13 @@ function handleConfirm(row, editIndex = null) {
             name: nameInput.value,
             phone: phoneInput.value,
             order: orderInput.value,
-            lens: lensInput.value,
-            concluido: false
+            concluido: false,
+            etapaBotao: 'inicio'
         }
 
         if (editIndex !== null) {
             novoAcompanhamento.concluido = acompanhamentos[editIndex].concluido || false
+            novoAcompanhamento.etapaBotao = acompanhamentos[editIndex].etapaBotao || 'inicio'
             acompanhamentos[editIndex] = novoAcompanhamento
         } else {
             acompanhamentos.push(novoAcompanhamento)
@@ -232,7 +259,6 @@ function handleConfirm(row, editIndex = null) {
     }
 }
 
-// Inicializa
 renderAcompanhamentos()
 
 function fazerBackup() {
@@ -254,5 +280,4 @@ function fazerBackup() {
     URL.revokeObjectURL(url)
 }
 
-// Conecta o botão com a função
 qs('#btnBackup').addEventListener('click', fazerBackup)
