@@ -4,14 +4,20 @@
     padding: 0;
     font-family: 'Open Sans', sans-serif;
 }
-body, html {
+
+html, body {
     height: 100%;
     background-color: #f5f5f5;
+    overflow: hidden; /* evita rolagem dupla */
 }
+
 .container {
     display: flex;
     height: 100vh;
+    overflow: hidden;
 }
+
+/* Sidebar lateral fixa */
 .sidebar {
     width: 250px;
     background-color: #1E3A5F;
@@ -20,7 +26,9 @@ body, html {
     flex-direction: column;
     align-items: center;
     padding: 20px 0;
+    flex-shrink: 0;
 }
+
 .logo {
     background-image: url('../images/iconeoculos1.png');
     background-size: cover;
@@ -28,14 +36,17 @@ body, html {
     height: 100px;
     margin-bottom: 20px;
 }
+
 .sidebar nav ul {
     list-style: none;
     width: 100%;
 }
+
 .sidebar nav ul li {
     padding: 15px;
     text-align: center;
 }
+
 .sidebar nav ul li a {
     text-decoration: none;
     color: white;
@@ -43,103 +54,120 @@ body, html {
     display: block;
     transition: 0.3s;
 }
-.sidebar nav ul li:hover, .active {
+
+.sidebar nav ul li:hover,
+.sidebar nav ul li.active {
     background-color: #ffb200;
 }
+
+/* Área de conteúdo com rolagem */
 .content {
     flex: 1;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 40px;
     display: flex;
+    flex-direction: column;
+}
+
+/* Área principal do conteúdo */
+.principal {
+    flex: 1;
     padding-bottom: 40px;
-    justify-content: center;
-    align-items: center;  
-    
 }
-.principal{
-    width: calc(100% - 80px);
-    height: calc(100% - 80px);
-   
-     
-}
-.bar{
+
+.bar {
     width: 100%;
     height: 3px;
     background-color: black;
     margin-top: 30px;
 }
-.list_title{
+
+.list_title {
     padding-top: 30px;
 }
 
-.title_area{
+.title_area {
     width: 100%;
     height: 60px;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-.title_area ul{
+
+.title_area ul {
     list-style: none;
 }
-.title_area a{
+
+.title_area a {
     text-decoration: none;
     color: white;
     font-weight: bold;
     background-color: #ffb200;
     padding: 10px;
 }
-.acompanhamento_area{
-    height: calc(100% - 110px);
+
+.acompanhamento_area {
+    margin-top: 20px;
 }
 
+/* Rodapé fixado fora do conteúdo rolável */
 footer {
     text-align: center;
     padding: 10px;
     background-color: #1E3A5F;
     color: white;
-    position: fixed;
-    bottom: 0;
+    height: 40px;
+    flex-shrink: 0;
     width: 100%;
 }
 
+/* Tabela */
 .informacoes {
+    width: 100%;
     margin-top: 20px;
-    width: 100%;    
-    
 }
-.informacoes_chamado th, td{
-    text-align: left;
-}
-.informacoes_chamado tbody tr:nth-child(even){
-    background-color: #BBB;   
-}
-.tr1{
+
+.tr1 {
     background-color: #ffb200;
     color: white;
 }
-.inputModel{
-    display: none;
+
+.informacoes_chamado th,
+.informacoes_chamado td {
+    text-align: left;
 }
-.error{
+
+.informacoes_chamado tbody tr:nth-child(even) {
+    background-color: #BBB;
+}
+
+/* Erros e validações */
+.error {
     border: 2px solid #FF0000;
 }
-.error::placeholder{
-    color: #000;   
+
+.error::placeholder {
+    color: #000;
 }
+
+/* Botões */
 .button {
-  color: #fff;
-  background-color: #007BFF;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s;
+    color: #fff;
+    background-color: #007BFF;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
 .button:hover {
-  background-color: #0056b3;
+    background-color: #0056b3;
 }
-.backup{
+
+.backup {
     font-weight: bold;
     padding: 10px;
     margin-left: 5px;
@@ -149,4 +177,3 @@ footer {
     border-radius: 6px;
     cursor: pointer;
 }
- 
