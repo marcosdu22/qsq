@@ -33,7 +33,7 @@ function aplicarMascaras(row) {
 }
 
 function aplicarEstiloLinha(row, etapaBotao, concluido) {
-    let bg = '#c7b6be'
+    let bg = '#494949'
     let fg = '#FFFFFF'
 
     if (concluido) {
