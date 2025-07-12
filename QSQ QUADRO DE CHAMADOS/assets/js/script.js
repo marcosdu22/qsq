@@ -104,7 +104,7 @@ function editarChamado(row, chamado, index) {
     input.type = 'text'
     input.className = 'reason'
     input.value = chamado.reason
-    input.maxLength = 40
+    input.maxLength = 60
     input.style = 'flex: 1; padding: 4px; text-align:center;'
 
     const btn = document.createElement('button')
@@ -139,7 +139,7 @@ qs('#novoAcompanhamento').addEventListener('click', (e) => {
     input.type = 'text'
     input.className = 'reason'
     input.placeholder = 'MOTIVO...'
-    input.maxLength = 40
+    input.maxLength = 60
     input.style = 'flex: 1; padding: 4px; text-align:center;'
 
     const btn = document.createElement('button')
